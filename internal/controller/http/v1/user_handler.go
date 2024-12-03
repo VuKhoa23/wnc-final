@@ -54,7 +54,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		))
 		return
 	}
-	c.AbortWithStatus(204)
+	c.AbortWithStatus(200)
 }
 
 func (handler *TodoHandler) GetList(c *gin.Context) {
