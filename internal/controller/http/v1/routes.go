@@ -14,7 +14,7 @@ func MapRoutes(router *gin.Engine, userHandler *UserHandler, todoHandler *TodoHa
 	{
 		v1.GET("/todos", authMiddleware.VerifyToken, todoHandler.GetList)
 		v1.POST("/todos", authMiddleware.VerifyToken, todoHandler.Add)
-		v1.PUT("/todos", authMiddleware.VerifyToken, todoHandler.Update)
+		v1.PUT("/todos/:id", authMiddleware.VerifyToken, todoHandler.Update)
 		v1.POST("/users/login", userHandler.Login)
 		v1.POST("/users/register", userHandler.Register)
 	}
