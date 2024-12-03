@@ -2,6 +2,7 @@ package http
 
 import (
 	"fmt"
+	"github.com/VuKhoa23/advanced-web-be/internal/controller/http/middleware"
 	"net/http"
 	"os"
 	"strconv"
@@ -12,11 +13,13 @@ import (
 )
 
 type Server struct {
-	studentHandler *v1.StudentHandler
+	userHandler    *v1.UserHandler
+	todosHandler   *v1.TodoHandler
+	authMiddleware *middleware.AuthMiddleware
 }
 
-func NewServer(studentHandler *v1.StudentHandler) *Server {
-	return &Server{studentHandler: studentHandler}
+func NewServer(userHandler *v1.UserHandler, todoHandler *v1.TodoHandler, authMiddleware *middleware.AuthMiddleware) *Server {
+	return &Server{userHandler: userHandler, todosHandler: todoHandler, authMiddleware: authMiddleware}
 }
 
 func (s *Server) Run() {
@@ -27,7 +30,7 @@ func (s *Server) Run() {
 		Handler: router,
 	}
 
-	v1.MapRoutes(router, s.studentHandler)
+	v1.MapRoutes(router, s.userHandler, s.todosHandler, s.authMiddleware)
 	err := httpServerInstance.ListenAndServe()
 	if err != nil {
 		return

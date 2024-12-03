@@ -6,6 +6,7 @@ package internal
 import (
 	"github.com/VuKhoa23/advanced-web-be/internal/controller"
 	"github.com/VuKhoa23/advanced-web-be/internal/controller/http"
+	"github.com/VuKhoa23/advanced-web-be/internal/controller/http/middleware"
 	v1 "github.com/VuKhoa23/advanced-web-be/internal/controller/http/v1"
 	"github.com/VuKhoa23/advanced-web-be/internal/database"
 	repositoryimplement "github.com/VuKhoa23/advanced-web-be/internal/repository/implement"
@@ -24,20 +25,25 @@ var serverSet = wire.NewSet(
 
 // handler === controller | with service and repository layers to form 3 layers architecture
 var handlerSet = wire.NewSet(
-	v1.NewStudentHandler,
+	v1.NewUserHandler,
+	v1.NewTodoHandler,
 )
 
 var serviceSet = wire.NewSet(
-	serviceimplement.NewStudentService,
+	serviceimplement.NewUserService,
 )
 
 var repositorySet = wire.NewSet(
-	repositoryimplement.NewStudentRepository,
+	repositoryimplement.NewUserRepository,
+)
+
+var middlewareSet = wire.NewSet(
+	middleware.NewAuthMiddleware,
 )
 
 func InitializeContainer(
 	db database.Db,
 ) *controller.ApiContainer {
-	wire.Build(serverSet, handlerSet, serviceSet, repositorySet, container)
+	wire.Build(serverSet, handlerSet, serviceSet, repositorySet, middlewareSet, container)
 	return &controller.ApiContainer{}
 }
