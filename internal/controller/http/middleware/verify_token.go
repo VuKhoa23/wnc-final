@@ -116,4 +116,5 @@ func (a *AuthMiddleware) VerifyToken(c *gin.Context) {
 	}
 	userId := uint64(payload["id"].(float64))
 	c.Set("userId", userId)
+	c.Next()
 }

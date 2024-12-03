@@ -2,6 +2,7 @@ package serviceimplement
 
 import (
 	"github.com/VuKhoa23/advanced-web-be/internal/constants"
+	"github.com/VuKhoa23/advanced-web-be/internal/domain/entity"
 	"github.com/VuKhoa23/advanced-web-be/internal/domain/model"
 	"github.com/VuKhoa23/advanced-web-be/internal/repository"
 	"github.com/VuKhoa23/advanced-web-be/internal/service"
@@ -23,16 +24,17 @@ func (u UserService) Register(c *gin.Context, request model.AuthRequest) error {
 	return err
 }
 
-func (u UserService) Login(c *gin.Context, request model.AuthRequest) error {
+func (u UserService) Login(c *gin.Context, request model.AuthRequest) (entity.User, error) {
 	user, err := u.userRepository.LoginCommand(c, request.Username, request.Password)
 
 	jwtSecret, err := env.GetEnv("JWT_SECRET")
 	if err != nil {
-		return err
+		return entity.User{}, err
 	}
 	accessToken, err := jwt.GenerateToken(constants.ACCESS_TOKEN_DURATION, jwtSecret, map[string]interface{}{
 		"id": user.Id,
 	})
+
 	if err == nil {
 		c.SetCookie(
 			"access_token",
@@ -61,8 +63,8 @@ func (u UserService) Login(c *gin.Context, request model.AuthRequest) error {
 	}
 	err = u.userRepository.UpdateRefreshToken(c, user.Id, refreshToken)
 	if err != nil {
-		return err
+		return entity.User{}, err
 	}
 
-	return nil
+	return user, nil
 }

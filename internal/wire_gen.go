@@ -12,6 +12,7 @@ import (
 	"github.com/VuKhoa23/advanced-web-be/internal/controller/http/middleware"
 	"github.com/VuKhoa23/advanced-web-be/internal/controller/http/v1"
 	"github.com/VuKhoa23/advanced-web-be/internal/database"
+	"github.com/VuKhoa23/advanced-web-be/internal/database_todo"
 	"github.com/VuKhoa23/advanced-web-be/internal/repository/implement"
 	"github.com/VuKhoa23/advanced-web-be/internal/service/implement"
 	"github.com/google/wire"
@@ -19,11 +20,13 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeContainer(db database.Db) *controller.ApiContainer {
+func InitializeContainer(db database.Db, db_todo database_todo.Db) *controller.ApiContainer {
 	userRepository := repositoryimplement.NewUserRepository(db)
 	userService := serviceimplement.NewUserService(userRepository)
 	userHandler := v1.NewUserHandler(userService)
-	todoHandler := v1.NewTodoHandler()
+	todoRepository := repositoryimplement.NewTodoRepository(db_todo)
+	todoService := serviceimplement.NewTodoService(todoRepository)
+	todoHandler := v1.NewTodoHandler(todoService, userService)
 	authMiddleware := middleware.NewAuthMiddleware(userRepository)
 	server := http.NewServer(userHandler, todoHandler, authMiddleware)
 	apiContainer := controller.NewApiContainer(server)
@@ -40,8 +43,8 @@ var serverSet = wire.NewSet(http.NewServer)
 // handler === controller | with service and repository layers to form 3 layers architecture
 var handlerSet = wire.NewSet(v1.NewUserHandler, v1.NewTodoHandler)
 
-var serviceSet = wire.NewSet(serviceimplement.NewUserService)
+var serviceSet = wire.NewSet(serviceimplement.NewUserService, serviceimplement.NewTodoService)
 
-var repositorySet = wire.NewSet(repositoryimplement.NewUserRepository)
+var repositorySet = wire.NewSet(repositoryimplement.NewUserRepository, repositoryimplement.NewTodoRepository)
 
 var middlewareSet = wire.NewSet(middleware.NewAuthMiddleware)

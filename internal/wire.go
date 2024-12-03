@@ -9,6 +9,7 @@ import (
 	"github.com/VuKhoa23/advanced-web-be/internal/controller/http/middleware"
 	v1 "github.com/VuKhoa23/advanced-web-be/internal/controller/http/v1"
 	"github.com/VuKhoa23/advanced-web-be/internal/database"
+	"github.com/VuKhoa23/advanced-web-be/internal/database_todo"
 	repositoryimplement "github.com/VuKhoa23/advanced-web-be/internal/repository/implement"
 	serviceimplement "github.com/VuKhoa23/advanced-web-be/internal/service/implement"
 	"github.com/google/wire"
@@ -31,10 +32,12 @@ var handlerSet = wire.NewSet(
 
 var serviceSet = wire.NewSet(
 	serviceimplement.NewUserService,
+	serviceimplement.NewTodoService,
 )
 
 var repositorySet = wire.NewSet(
 	repositoryimplement.NewUserRepository,
+	repositoryimplement.NewTodoRepository,
 )
 
 var middlewareSet = wire.NewSet(
@@ -43,6 +46,7 @@ var middlewareSet = wire.NewSet(
 
 func InitializeContainer(
 	db database.Db,
+	db_todo database_todo.Db,
 ) *controller.ApiContainer {
 	wire.Build(serverSet, handlerSet, serviceSet, repositorySet, middlewareSet, container)
 	return &controller.ApiContainer{}

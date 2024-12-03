@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/VuKhoa23/advanced-web-be/internal/domain/entity"
 	httpcommon "github.com/VuKhoa23/advanced-web-be/internal/domain/http_common"
 	"github.com/VuKhoa23/advanced-web-be/internal/domain/model"
 	"github.com/VuKhoa23/advanced-web-be/internal/service"
@@ -44,7 +45,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	err = h.userService.Login(c, auth)
+	user, err := h.userService.Login(c, auth)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, httpcommon.NewErrorResponse(
 			httpcommon.Error{
@@ -54,11 +55,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		))
 		return
 	}
-	c.AbortWithStatus(200)
-}
-
-func (handler *TodoHandler) GetList(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"Hello": "Hi",
-	})
+	c.JSON(200, httpcommon.NewSuccessResponse[entity.User](&entity.User{
+		Username: user.Username,
+	}))
 }
