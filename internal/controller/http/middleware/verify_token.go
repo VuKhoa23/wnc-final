@@ -10,10 +10,10 @@ import (
 )
 
 type AuthMiddleware struct {
-	userRepository repository.UserRepository
+	userRepository *repository.UserRepository
 }
 
-func NewAuthMiddleware(userRepository repository.UserRepository) *AuthMiddleware {
+func NewAuthMiddleware(userRepository *repository.UserRepository) *AuthMiddleware {
 	return &AuthMiddleware{userRepository: userRepository}
 }
 

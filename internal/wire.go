@@ -9,9 +9,8 @@ import (
 	"github.com/VuKhoa23/advanced-web-be/internal/controller/http/middleware"
 	v1 "github.com/VuKhoa23/advanced-web-be/internal/controller/http/v1"
 	"github.com/VuKhoa23/advanced-web-be/internal/database"
-	"github.com/VuKhoa23/advanced-web-be/internal/database_todo"
-	repositoryimplement "github.com/VuKhoa23/advanced-web-be/internal/repository/implement"
-	serviceimplement "github.com/VuKhoa23/advanced-web-be/internal/service/implement"
+	"github.com/VuKhoa23/advanced-web-be/internal/repository"
+	"github.com/VuKhoa23/advanced-web-be/internal/service"
 	"github.com/google/wire"
 )
 
@@ -27,17 +26,14 @@ var serverSet = wire.NewSet(
 // handler === controller | with service and repository layers to form 3 layers architecture
 var handlerSet = wire.NewSet(
 	v1.NewUserHandler,
-	v1.NewTodoHandler,
 )
 
 var serviceSet = wire.NewSet(
-	serviceimplement.NewUserService,
-	serviceimplement.NewTodoService,
+	service.NewUserService,
 )
 
 var repositorySet = wire.NewSet(
-	repositoryimplement.NewUserRepository,
-	repositoryimplement.NewTodoRepository,
+	repository.NewUserRepository,
 )
 
 var middlewareSet = wire.NewSet(
@@ -46,7 +42,6 @@ var middlewareSet = wire.NewSet(
 
 func InitializeContainer(
 	db database.Db,
-	db_todo database_todo.Db,
 ) *controller.ApiContainer {
 	wire.Build(serverSet, handlerSet, serviceSet, repositorySet, middlewareSet, container)
 	return &controller.ApiContainer{}

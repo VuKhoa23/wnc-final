@@ -12,23 +12,19 @@ import (
 	"github.com/VuKhoa23/advanced-web-be/internal/controller/http/middleware"
 	"github.com/VuKhoa23/advanced-web-be/internal/controller/http/v1"
 	"github.com/VuKhoa23/advanced-web-be/internal/database"
-	"github.com/VuKhoa23/advanced-web-be/internal/database_todo"
-	"github.com/VuKhoa23/advanced-web-be/internal/repository/implement"
-	"github.com/VuKhoa23/advanced-web-be/internal/service/implement"
+	"github.com/VuKhoa23/advanced-web-be/internal/repository"
+	"github.com/VuKhoa23/advanced-web-be/internal/service"
 	"github.com/google/wire"
 )
 
 // Injectors from wire.go:
 
-func InitializeContainer(db database.Db, db_todo database_todo.Db) *controller.ApiContainer {
-	userRepository := repositoryimplement.NewUserRepository(db)
-	userService := serviceimplement.NewUserService(userRepository)
+func InitializeContainer(db database.Db) *controller.ApiContainer {
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
 	userHandler := v1.NewUserHandler(userService)
-	todoRepository := repositoryimplement.NewTodoRepository(db_todo)
-	todoService := serviceimplement.NewTodoService(todoRepository)
-	todoHandler := v1.NewTodoHandler(todoService, userService)
 	authMiddleware := middleware.NewAuthMiddleware(userRepository)
-	server := http.NewServer(userHandler, todoHandler, authMiddleware)
+	server := http.NewServer(userHandler, authMiddleware)
 	apiContainer := controller.NewApiContainer(server)
 	return apiContainer
 }
@@ -41,10 +37,10 @@ var container = wire.NewSet(controller.NewApiContainer)
 var serverSet = wire.NewSet(http.NewServer)
 
 // handler === controller | with service and repository layers to form 3 layers architecture
-var handlerSet = wire.NewSet(v1.NewUserHandler, v1.NewTodoHandler)
+var handlerSet = wire.NewSet(v1.NewUserHandler)
 
-var serviceSet = wire.NewSet(serviceimplement.NewUserService, serviceimplement.NewTodoService)
+var serviceSet = wire.NewSet(service.NewUserService)
 
-var repositorySet = wire.NewSet(repositoryimplement.NewUserRepository, repositoryimplement.NewTodoRepository)
+var repositorySet = wire.NewSet(repository.NewUserRepository)
 
 var middlewareSet = wire.NewSet(middleware.NewAuthMiddleware)
