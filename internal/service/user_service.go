@@ -25,6 +25,9 @@ func (u UserService) Register(c *gin.Context, request model.AuthRequest) error {
 
 func (u UserService) Login(c *gin.Context, request model.AuthRequest) (entity.User, error) {
 	user, err := u.userRepository.LoginCommand(c, request.Username, request.Password)
+	if err != nil {
+		return entity.User{}, err
+	}
 
 	jwtSecret, err := env.GetEnv("JWT_SECRET")
 	if err != nil {

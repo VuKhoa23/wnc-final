@@ -59,3 +59,9 @@ func (h *UserHandler) Login(c *gin.Context) {
 		Username: user.Username,
 	}))
 }
+
+func (h *UserHandler) WhoAmI(c *gin.Context) {
+	userId, _ := c.Get("userId")
+
+	c.JSON(200, gin.H{"userId": userId})
+}
